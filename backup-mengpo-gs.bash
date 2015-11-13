@@ -60,7 +60,7 @@ function snapshot_cleanup {
     echo "File to remove = ${REMOVEFILE}"
 
     if ! $GSUTIL rm ${REMOVEFILE}; then
-      echo "ERROR: Could not perform snapshot cleanup. Check your permissions."
+      >&2 echo "ERROR: $0, Could not perform snapshot cleanup. Check your permissions."
       return
     fi
 

@@ -11,7 +11,18 @@ Requires lvmtools, gpg, gzip
 
 The SSH and GS versions share stuff and could be put into
 a single file, but I figured it could be clearer separately.
+
 Feel free to change as you wish.
+
+#### TODO ###
+
+It would make sense to make a version of the files that can
+be called with arguments, which would help updating the scripts.
+You could then call the same file from cron with args, or make
+source the file and make script files for each backup separately,
+with only the args as values.
+
+I'll probably do that next.
 
 ### ./backup-host-gs.bash
 
