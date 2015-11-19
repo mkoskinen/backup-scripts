@@ -2,6 +2,10 @@
 
 ### Some scripts for handling LVM snapshot backups
 
+The idea of these scripts is to take LVM snapshots of LVM partitions,
+compress, encrypt and push them to cloud storage or a remote SSH server.
+You can launch these through cron.
+
 *These are shell scripts so things can easily go wrong, please
 be careful.*
 
@@ -16,15 +20,11 @@ Feel free to change as you wish.
 
 #### TODO ###
 
-It would make sense to make a version of the files that can
-be called with arguments, which would help updating the scripts.
-You could then call the same file from cron with args, or make
-source the file and make script files for each backup separately,
-with only the args as values.
+Make the SSH version similar to the GS version, so that
+it can be called with command line arguments or exported
+variables from a parent script.
 
-I'll probably do that next.
-
-### ./backup-host-gs.bash
+### ./backup-gs.bash
 
 Pushes backups to Google Cloud storage.
 Requires configured gsutil (https://cloud.google.com/storage/docs/gsutil_install)
@@ -38,6 +38,11 @@ directories.
 
 A more sophisticated system for cleanup is suggested though. You should not let
 the user that pushes the backups be able to remove them afterwards.
+
+You can call backup-gs.bash directly with the required 6 arguments, or perhaps
+more preferably make a wrapper shell script for each partition that exports
+the required variables. Please see 'backup-mengpo-gs.bash' for an example.
+
 
 ### ./backup-host-ssh.bash
 
