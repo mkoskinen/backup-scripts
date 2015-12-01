@@ -53,6 +53,9 @@ function set_optional_defaults {
 
   # gsutil path (do not use quotes if using tilde)
   if [ -z ${GSUTIL+x} ]; then GSUTIL=~/gsutil/gsutil; fi
+
+  # gsutil switches. we set -q to suppress upgrade prompt
+  if [ -z ${GSUTIL_SWITCHES+x} ]; then GSUTIL="${GSUTIL} -q"; fi
 }
 
 # Clean up old snapshots, if needed
@@ -130,10 +133,12 @@ function push_snapshot {
 
   # DD the image through gzip and gsutil
   # With GPG, gzip forked as --fast in other process.
-  /usr/bin/time /bin/dd if="/dev/${VOLGROUP}/${SNAPNAME}" bs=128k |\
+  echo "dd started at: $(date)"
+  /bin/dd if="/dev/${VOLGROUP}/${SNAPNAME}" bs=128k status=none|\
      /bin/nice -n 19 /bin/gzip --fast -|\
      /bin/nice -n 19 /usr/bin/gpg -z 0 -c --batch --no-tty --passphrase-file "${PASSFILE}" |\
      ${GSUTIL} -q cp - gs://${BUCKET}/${REMOTEDIR}/${SNAPNAME}-$(date +%Y%m%d-%H%M.dd.gz.gpg)
+  echo "dd ended at: $(date)"
 
   # Drop the snapshot
   /usr/sbin/lvremove -f "/dev/${VOLGROUP}/${SNAPNAME}"
