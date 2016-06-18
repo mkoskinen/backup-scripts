@@ -26,4 +26,4 @@ export SNAPSHOT_RETENTION_COUNT=7 # Amount of snapshots to keep. 0 is infinite.
 export GSUTIL=/bin/gsutil # gsutil path (do not use quotes if using tilde)
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-${DIR}/backup-gs.bash
+"${DIR}"/backup-gs.bash

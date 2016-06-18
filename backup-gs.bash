@@ -42,45 +42,45 @@
 
 function set_optional_defaults {
   # More cleanup. Only remove files with this suffix. Set "" to rotate all.
-  if [ -z ${SNAPSHOT_ROTATION_SUFFIX+x} ]; then SNAPSHOT_ROTATION_SUFFIX="/*.dd.gz.gpg"; fi
+  if [ -z "${SNAPSHOT_ROTATION_SUFFIX+x}" ]; then SNAPSHOT_ROTATION_SUFFIX="/*.dd.gz.gpg"; fi
 
   # REMOTEDIR - A directory within the bucket
-  if [ -z ${REMOTEDIR+x} ]; then REMOTEDIR="${VOLNAME}"; fi
+  if [ -z "${REMOTEDIR+x}" ]; then REMOTEDIR="${VOLNAME}"; fi
 
   # Arbitrary snapshot name, used for backup filename as well
   # Just needs to be unique and descriptive
-  if [ -z ${SNAPNAME+x} ]; then SNAPNAME="snap_${VOLNAME}"; fi
+  if [ -z "${SNAPNAME+x}" ]; then SNAPNAME="snap_${VOLNAME}"; fi
 
   # gsutil path (do not use quotes if using tilde)
-  if [ -z ${GSUTIL+x} ]; then GSUTIL=~/gsutil/gsutil; fi
+  if [ -z "${GSUTIL+x}" ]; then GSUTIL=~/gsutil/gsutil; fi
 
   # gsutil switches. we set -q to suppress upgrade prompt
-  if [ -z ${GSUTIL_SWITCHES+x} ]; then GSUTIL="${GSUTIL} -q"; fi
+  if [ -z "${GSUTIL_SWITCHES+x}" ]; then GSUTIL="${GSUTIL} -q"; fi
 }
 
 # Clean up old snapshots, if needed
 function snapshot_cleanup {
-  if [ $SNAPSHOT_RETENTION_COUNT -eq 0 ]
+  if [ "$SNAPSHOT_RETENTION_COUNT" -eq 0 ]
   then
     # If $SNAPSHOT_RETENTION_COUNT is set to 0, we don't "rotate"
     return
   fi
 
-  SNAPSHOT_LIST=$($GSUTIL ls gs://${BUCKET}/${REMOTEDIR}${SNAPSHOT_ROTATION_SUFFIX}|sort|uniq|sort)
+  SNAPSHOT_LIST=$($GSUTIL ls gs://"${BUCKET}"/"${REMOTEDIR}""${SNAPSHOT_ROTATION_SUFFIX}"|sort|uniq|sort)
   SNAPSHOT_COUNT=$(echo "${SNAPSHOT_LIST}"|wc -l)
 
-  while [ $SNAPSHOT_COUNT -gt $SNAPSHOT_RETENTION_COUNT ]
+  while [ "$SNAPSHOT_COUNT" -gt "$SNAPSHOT_RETENTION_COUNT" ]
   do
     echo "Snapshot count = $SNAPSHOT_COUNT"
     REMOVEFILE=$(echo "${SNAPSHOT_LIST}"|head -n1)
     echo "File to remove = ${REMOVEFILE}"
 
-    if ! $GSUTIL rm ${REMOVEFILE}; then
+    if ! $GSUTIL rm "${REMOVEFILE}"; then
       >&2 echo "ERROR: $0, Could not perform snapshot cleanup. Check your permissions."
       return
     fi
 
-    SNAPSHOT_LIST=$($GSUTIL ls gs://${BUCKET}/${REMOTEDIR}|sort|uniq|sort)
+    SNAPSHOT_LIST=$($GSUTIL ls gs://"${BUCKET}"/"${REMOTEDIR}"|sort|uniq|sort)
     SNAPSHOT_COUNT=$(echo "${SNAPSHOT_LIST}"|wc -l)
   done
 }
@@ -122,14 +122,14 @@ function syntax_check {
       if [ -z "$val" ] && [ "${val+xxx}" = "xxx" ]; then syntax; exit 1; fi
     done
   else
-    syntax $*
+    syntax "$@"
   fi
 }
 
 # Create an LVM snapshot and push it to GS, then release
 function push_snapshot {
   # Create a snapshot
-  /usr/sbin/lvcreate -L${SNAPSIZE} -s -n "${SNAPNAME}" "/dev/${VOLGROUP}/${VOLNAME}"
+  /usr/sbin/lvcreate -L"${SNAPSIZE}" -s -n "${SNAPNAME}" "/dev/${VOLGROUP}/${VOLNAME}"
 
   # DD the image through gzip and gsutil
   # With GPG, gzip forked as --fast in other process.
@@ -137,7 +137,7 @@ function push_snapshot {
   /bin/dd if="/dev/${VOLGROUP}/${SNAPNAME}" bs=128k status=none|\
      /bin/nice -n 19 /bin/gzip --fast -|\
      /bin/nice -n 19 /usr/bin/gpg -z 0 -c --batch --no-tty --passphrase-file "${PASSFILE}" |\
-     ${GSUTIL} -q cp - gs://${BUCKET}/${REMOTEDIR}/${SNAPNAME}-$(date +%Y%m%d-%H%M.dd.gz.gpg)
+     ${GSUTIL} -q cp - gs://"${BUCKET}"/"${REMOTEDIR}"/"${SNAPNAME}"-"$(date +%Y%m%d-%H%M.dd.gz.gpg)"
   echo "dd ended at: $(date)"
 
   # Drop the snapshot
@@ -145,9 +145,9 @@ function push_snapshot {
 }
 
 # "Main"
-syntax_check $*
-set_optional_defaults $*
-gsutil_check $*
-snapshot_cleanup $*
-push_snapshot $*
+syntax_check "$@"
+set_optional_defaults "$@"
+gsutil_check "$@"
+snapshot_cleanup "$@"
+push_snapshot "$@"
 
