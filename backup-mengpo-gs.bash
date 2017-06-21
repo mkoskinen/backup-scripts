@@ -3,7 +3,7 @@
 # An example of a file calling 'backup-gs.bash'.
 # This would define the required settings for one
 # partition.
-# The first 6 values are mandatory. The remaing ones
+# The first 6 values are mandatory. The remaining ones
 # have reasonable defaults if they are unset or null.
 #
 # Author: Markus Koskinen - License: BSD

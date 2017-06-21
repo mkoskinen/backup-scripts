@@ -59,7 +59,7 @@ Again "mengpo" and "gs-backup" are just example names
 From file:
 
 ```
-% gpg -d --passphrase-file mengpo.pwd snap_mengpo-20151022-0800.dd.gz.gpg|gunzip -> targetfile_or_device.dd
+% gpg -d --batch --passphrase-file mengpo.pwd snap_mengpo-20151022-0800.dd.gz.gpg|gunzip -> targetfile_or_device.dd
 ```
 
 From stream:

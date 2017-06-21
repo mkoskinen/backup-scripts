@@ -41,6 +41,7 @@ SSH_PORT=22
 
 # DD the image through gzip and gsutil
 # With GPG, gzip forked as --fast in other process.
+# shellcheck disable=SC2029
 /usr/bin/time /bin/dd if="/dev/${VOLGROUP}/${SNAPNAME}" bs=128k |\
    /bin/nice -n 19 /bin/gzip --fast -|\
    /bin/nice -n 19 /usr/bin/gpg -z 0 -c --batch --no-tty --passphrase-file "${PASSFILE}" |\
