@@ -24,9 +24,9 @@ Make the SSH version similar to the GS version, so that
 it can be called with command line arguments or exported
 variables from a parent script.
 
-### ./backup-gs.bash
+### ./backup-gsutil.bash
 
-Pushes backups to Google Cloud storage.
+Pushes backups to Google Cloud storage or S3 using gsutil. See known issues re S3.
 Requires configured gsutil (https://cloud.google.com/storage/docs/gsutil_install)
 
 Supports crude rotating of old backups. Set SNAPSHOT_RETENTION_COUNT variable
@@ -67,3 +67,8 @@ From stream:
 ```
 % gsutil cp gs://gs-backup/mengpo/snap_mengpo-20151022-0800.dd.gz.gpg -|gpg -d --passphrase-file mengpo.pwd -|gunzip -> targetfile_or_device.dd
 ```
+
+### Known issues
+
+At the time of this writing gsutil does not support SIGV4 so some S3 areas like Frankfurt will not work.
+You can work around this by using areas like Ireland or replacing gsutil with aws cli (s3).
