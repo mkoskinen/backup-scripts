@@ -24,7 +24,7 @@ Make the SSH version similar to the GS version, so that
 it can be called with command line arguments or exported
 variables from a parent script.
 
-### ./backup-gs.bash
+### ./backup-gsutil.bash
 
 Pushes backups to Google Cloud storage.
 Requires configured gsutil (https://cloud.google.com/storage/docs/gsutil_install)
@@ -43,6 +43,11 @@ You can call backup-gs.bash directly with the required 6 arguments, or perhaps
 more preferably make a wrapper shell script for each partition that exports
 the required variables. Please see 'backup-mengpo-gs.bash' for an example.
 
+### ./backup-s3.bash
+
+Very similar to the gsutil script, but uses aws cli. Gsutil used to be ok
+to use for both S3 and GS, but unfortunately it is no longer actively
+maintained and doesn't support eg Frankfurt S3. Also has other issues.
 
 ### ./backup-host-ssh.bash
 
@@ -67,3 +72,8 @@ From stream:
 ```
 % gsutil cp gs://gs-backup/mengpo/snap_mengpo-20151022-0800.dd.gz.gpg -|gpg -d --passphrase-file mengpo.pwd -|gunzip -> targetfile_or_device.dd
 ```
+
+### Known issues
+
+It is not recommeded to use gsutil with S3 anymore. It doesn't support
+SIGV4 and will not work with new S3 regions like Frankfurt.
