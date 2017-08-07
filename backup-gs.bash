@@ -54,9 +54,6 @@ function set_optional_defaults {
   # gsutil path (do not use quotes if using tilde)
   if [ -z "${GSUTIL+x}" ]; then GSUTIL=~/gsutil/gsutil; fi
 
-  # PROTOCOL is either gs or s3, defaults to gs
-  if [ -z "${PROTOCOL+x}" ]; then PROTOCOL=gs; fi
-
   # gsutil switches. we set -q to suppress upgrade prompt
   if [ -z "${GSUTIL_SWITCHES+x}" ]; then GSUTIL="${GSUTIL} -q"; fi
 }
@@ -69,7 +66,7 @@ function snapshot_cleanup {
     return
   fi
 
-  SNAPSHOT_LIST=$($GSUTIL ls "${PROTOCOL}"://"${BUCKET}"/"${REMOTEDIR}""${SNAPSHOT_ROTATION_SUFFIX}"|sort|uniq|sort)
+  SNAPSHOT_LIST=$($GSUTIL ls gs://"${BUCKET}"/"${REMOTEDIR}""${SNAPSHOT_ROTATION_SUFFIX}"|sort|uniq|sort)
   SNAPSHOT_COUNT=$(echo "${SNAPSHOT_LIST}"|wc -l)
 
   while [ "$SNAPSHOT_COUNT" -gt "$SNAPSHOT_RETENTION_COUNT" ]
@@ -83,14 +80,14 @@ function snapshot_cleanup {
       return
     fi
 
-    SNAPSHOT_LIST=$($GSUTIL ls "${PROTOCOL}"://"${BUCKET}"/"${REMOTEDIR}"|sort|uniq|sort)
+    SNAPSHOT_LIST=$($GSUTIL ls gs://"${BUCKET}"/"${REMOTEDIR}"|sort|uniq|sort)
     SNAPSHOT_COUNT=$(echo "${SNAPSHOT_LIST}"|wc -l)
   done
 }
 
 # A connection test with gsutil, if it fails we don't continue
 function gsutil_check {
-    if ! $GSUTIL ls "${PROTOCOL}"://${BUCKET}" > /dev/null; then
+    if ! $GSUTIL ls "gs://${BUCKET}" > /dev/null; then
       >&2 echo "ERROR: $0, Could not access your storage bucket. Check your boto settings. Exiting."
       exit 1
     fi  
@@ -153,3 +150,4 @@ set_optional_defaults "$@"
 gsutil_check "$@"
 snapshot_cleanup "$@"
 push_snapshot "$@"
+

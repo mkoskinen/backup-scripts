@@ -11,7 +11,7 @@
 
 # Mandatory configurations
 
-export BUCKET="gs-backup" # Google storage or S3 bucket name
+export BUCKET="gs-backup" # Google storage bucket name
 export VOLGROUP="vg_kvm01_ssd" # LVM group name (check with 'lvdisplay')
 export VOLNAME="mengpo" # LVM volume name
 export PASSFILE="/root/backup-scripts/mengpo.pwd" # File with GPG passphrase
@@ -23,8 +23,7 @@ export SNAPSHOT_RETENTION_COUNT=7 # Amount of snapshots to keep. 0 is infinite.
 #export SNAPSHOT_ROTATION_SUFFIX="/*.dd.gz.gpg" # Only remove files with this suffix. Set "" to rotate all.
 #export REMOTEDIR="${VOLNAME}" # A directory within the bucket
 #export SNAPNAME="snap_${VOLNAME}" # Unique snapshot name
-#export PROTOCOL="s3" # gs or s3, defaults to gs. Uncomment for S3
 export GSUTIL=/bin/gsutil # gsutil path (do not use quotes if using tilde)
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-"${DIR}"/backup-gsutil.bash
+"${DIR}"/backup-gs.bash
