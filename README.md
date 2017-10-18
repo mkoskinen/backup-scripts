@@ -72,6 +72,11 @@ From stream:
 ```
 % gsutil cp gs://gs-backup/mengpo/snap_mengpo-20151022-0800.dd.gz.gpg -|gpg -d --passphrase-file mengpo.pwd -|gunzip -> targetfile_or_device.dd
 ```
+From stream:
+
+```
+% time aws s3 cp s3://s3-backup/mengpo/snap_mengpo-20170906-0130.dd.gz.gpg -|gpg -d --batch --passphrase-file ~/backup-scripts/mengpo.pwd -|gunzip ->/dev/vgrestore/mengpo
+```
 
 ### Known issues
 
